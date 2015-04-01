@@ -1,0 +1,53 @@
+{% extends "newblog/blog_base.html" %}
+{% load comments %}
+{% block title %} Blog {% endblock %}
+ 
+{% block article %}
+<article class='content-main'>
+	    {% for blog in blogs %}
+        <h4><a href="{% url "newblog:blog_detail" blog.id %}">{{ blog.title }}</a></h4>
+        <p class="muted">
+            {% for tag in blog.tags.all %}
+                <i class="icon-tag"></i> <small>{{ tag }}</small>
+            {% endfor %}
+        </p>
+        <div>{{ blog.content}} </div>
+ 
+        <div class="row-fluid">
+            <div class="span3">
+            	<br><p class="muted"><i class="icon-user"></i><small> Post by: {{ blog.user.username }}</small>
+                <br><i class="icon-time"></i><small> {{ blog.published_time }}</small></p>
+            </div>
+            <div class="span2 offset7">
+            	{% if user.is_authenticated and user.username = blog.user.username%} 
+                <a href="{% url "newblog:blog_del" blog.id %}" title="delete"><i class="icon-trash"></i></a>
+                <a href="{% url "newblog:blog_update" blog.id%}" title="edit"><i class="icon-edit"></i></a>
+                {% endif%}
+                {% get_comment_count for blog as comment_count %}
+                <a href="{% url "newblog:blog_detail" blog.id %}#cmt" title="comment"><i class=" icon-comment"></i>{{ comment_count }}</a>
+            </div>
+        </div>
+    <hr>
+    {% endfor %}
+</article>
+{% endblock %}
+ 
+{% block aside %}   
+     {% if user.is_authenticated %}
+    <a class="btn" href="{% url "newblog:blog_add" %}"><i class="icon-plus"></i> Add New Blog</a>
+    {% endif %}
+    {% block tags %}
+        <ul class="nav nav-list">
+        <li class="nav-header">Tag Filter</li>
+        {% for tag in tags %}
+
+        <li class=""><a href="{% url "newblog:blog_filter" tag.id %}"><i class="icon-tag"></i>{{ tag }}</small></a></li>
+            {% endfor %}
+
+</ul>
+
+    {% endblock %}
+{% endblock %}
+
+
+
